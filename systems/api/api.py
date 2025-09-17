@@ -8,16 +8,10 @@ from systems.models import Switch, SwitchPort, System
 
 @api_view(["GET"])
 def APISwitchView(request, *args, **kwargs):
-  model_data = Switch.objects.all().values()
-  data = []
-  if model_data:
-    data = model_data    
-  return Response(data)
+  model_data = list(Switch.objects.all().values())
+  return Response(model_data)
 
 @api_view(["GET"])
 def APISystemView(request, *args, **kwargs):
   model_data = list(System.objects.all().values())
-  data=[]
-  if model_data:
-    data = model_data
-  return Response(data)
+  return Response(model_data)

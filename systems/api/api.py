@@ -1,9 +1,6 @@
-from django.forms.models import model_to_dict
-from django.shortcuts import render
-import json
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from systems.models import Switch, SwitchPort, System
+from systems.models import Switch, System
 
 
 @api_view(["GET"])

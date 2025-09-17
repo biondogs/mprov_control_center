@@ -10,7 +10,7 @@ import requests
 import sh
 import subprocess
 
-# This scirpt will:
+# This script will:
 # - grab the disklayout from the mPCC, 
 # - build the partition table(s)
 # - build the file system(s)
@@ -21,10 +21,10 @@ import subprocess
 # - mark the system's bootable NIC as not bootable to indicate it's provisioned
 # - hand control over to systemd or reboot
 
-def exception_hook(exctype, value, tracebak):
+def exception_hook(exctype, value, traceback):
   traceback.print_exc()
   print("\n\nERROR: Installer failed.  Dropping to shell.  Note: You are still in the RAM disk.")
-  os.execv("/bin/setsid" "/bin/bash -m  <> /dev/tty1 >&0 2>&1")
+  os.execv("/bin/setsid", ["/bin/bash", "-m"])
 
 
 class mProvStatefulInstaller():
@@ -662,10 +662,6 @@ def main():
   sInstaller.copyRoot()
   sInstaller.installBootLoader()
   sInstaller.cleanupAndSwitchroot()
-  pass
 
-def __main__():
-    main()
-    raise Exception("Installer Exitted without switch_root()")
 if __name__ == "__main__":
     main()

@@ -24,7 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# default to an empty string, set this in the .env file!
+# WARNING: This defaults to an empty string which is insecure for production!
+# ALWAYS set this in the .env file with a strong, unique secret key!
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -223,8 +224,6 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
-
 USE_I18N = True
 
 USE_L10N = True
@@ -290,13 +289,13 @@ if os.environ.get("LDAP_ENABLED", "0") == "1":
     # set if LDAP_SELF_SIGNED_CERT is set in the env.
 
     if os.environ.get("LDAP_SELF_SIGNED_CERT", "0") == "1":
-        AUTH_LDAP_GLOBAL_OPTIONS = AUTH_LDAP_GLOBAL_OPTIONS.update({ ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER })
+        AUTH_LDAP_GLOBAL_OPTIONS.update({ ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER })
 
 
     # You may need to change this depending on your LDAP setup.  If you change this, make sure
     # you import the right Type from the module at the top of this file.
     AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")
-    AUTH_LDAP_GROUP_SEARCH = LDAPSearch({AUTH_MPROV_LDAP_BASE},ldap.SCOPE_SUBTREE, "(objectClass=posixGroup)")
+    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(AUTH_MPROV_LDAP_BASE, ldap.SCOPE_SUBTREE, "(objectClass=posixGroup)")
 
 
     AUTH_LDAP_USER_FLAGS_BY_GROUP = {

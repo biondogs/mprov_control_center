@@ -1,11 +1,13 @@
-from enum import unique
-from pyexpat import model
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django.conf import settings
 import os
+import subprocess
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ScriptType(models.Model):
@@ -40,16 +42,22 @@ class Script(models.Model):
       # make the dir
       try:
         os.makedirs(settings.MEDIA_ROOT + '/' + self.scriptType.slug, exist_ok=True)
-      except: 
-        print(f"Error: Unable to make script type dir: {settings.MEDIA_ROOT + '/' + self.scriptType.slug}")
+      except OSError as e: 
+        logger.error(f"Error: Unable to make script type dir: {settings.MEDIA_ROOT + '/' + self.scriptType.slug} - {e}")
         return
 
     self.filename.name = self.scriptType.slug + '/' + self.slug + "-v" + str(self.version)
     super(Script, self).save(*args, **kwargs)
-    print(os.path.join(settings.MEDIA_ROOT, self.filename.name))
-    if os.path.exists(os.path.join(settings.MEDIA_ROOT, self.filename.name)):
-      print("Converting file")
-      os.system("dos2unix " + os.path.join(settings.MEDIA_ROOT, self.filename.name))
+    logger.info(f"Script saved to: {os.path.join(settings.MEDIA_ROOT, self.filename.name)}")
+    file_path = os.path.join(settings.MEDIA_ROOT, self.filename.name)
+    if os.path.exists(file_path):
+      logger.info("Converting file from DOS to Unix line endings")
+      try:
+        subprocess.run(['dos2unix', file_path], check=True, capture_output=True, text=True)
+      except subprocess.CalledProcessError as e:
+        logger.warning(f"Failed to convert file line endings: {e}")
+      except FileNotFoundError:
+        logger.warning("dos2unix command not found, skipping line ending conversion")
 class File(models.Model):
   """
   Files are uploaded to the system and able to be served via the link provided.
@@ -68,13 +76,13 @@ class File(models.Model):
       # make the dir
       try:
         os.makedirs(settings.MEDIA_ROOT + '/files/', exist_ok=True)
-      except: 
-        print(f"Error: Unable to make files dir: {settings.MEDIA_ROOT + '/files/'}")
+      except OSError as e: 
+        logger.error(f"Error: Unable to make files dir: {settings.MEDIA_ROOT + '/files/'} - {e}")
         return
 
     self.filename.name = 'files/' + self.slug + "-v" + str(self.version)
     super(File, self).save(*args, **kwargs)
-    print(os.path.join(settings.MEDIA_ROOT, self.filename.name))
+    logger.info(f"File saved to: {os.path.join(settings.MEDIA_ROOT, self.filename.name)}")
 
 class AnsiblePlaybook(models.Model):
   """
@@ -103,16 +111,22 @@ class AnsiblePlaybook(models.Model):
       # make the dir
       try:
         os.makedirs(settings.MEDIA_ROOT + '/ansibleplaybooks/' + self.scriptType.slug, exist_ok=True)
-      except: 
-        print(f"Error: Unalbe to make script type dir: {settings.MEDIA_ROOT + '/ansibleplaybooks/' + self.scriptType.slug}")
+      except OSError as e: 
+        logger.error(f"Error: Unable to make script type dir: {settings.MEDIA_ROOT + '/ansibleplaybooks/' + self.scriptType.slug} - {e}")
         return
 
     self.filename.name = self.scriptType.slug + '/ansibleplaybooks/' + self.slug + "-v" + str(self.version)
     super(AnsiblePlaybook, self).save(*args, **kwargs)
-    print(os.path.join(settings.MEDIA_ROOT, self.filename.name))
-    if os.path.exists(os.path.join(settings.MEDIA_ROOT, self.filename.name)):
-      print("Converting file")
-      os.system("dos2unix " + os.path.join(settings.MEDIA_ROOT, self.filename.name))
+    logger.info(f"Ansible playbook saved to: {os.path.join(settings.MEDIA_ROOT, self.filename.name)}")
+    file_path = os.path.join(settings.MEDIA_ROOT, self.filename.name)
+    if os.path.exists(file_path):
+      logger.info("Converting file from DOS to Unix line endings")
+      try:
+        subprocess.run(['dos2unix', file_path], check=True, capture_output=True, text=True)
+      except subprocess.CalledProcessError as e:
+        logger.warning(f"Failed to convert file line endings: {e}")
+      except FileNotFoundError:
+        logger.warning("dos2unix command not found, skipping line ending conversion")
 
 class AnsibleRole(models.Model):
   ''' 

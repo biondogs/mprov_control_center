@@ -3,6 +3,9 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save, pre_delete, post_save
 from jobqueue.models import JobModule, Job, JobStatus, JobServer
 from scripts.models import Script, AnsiblePlaybook, AnsibleRole, AnsibleCollection
+import logging
+
+logger = logging.getLogger(__name__)
 
 # This will be an object managed by the jobserver image-update and repo-update modules.
 class OSType(models.Model):
@@ -111,12 +114,12 @@ class OSRepo(models.Model):
 def OSDistroUpdateJob(sender, **kwargs):
   OSImageJobType = None
   # get or create the OSIMAGE_UPDATE job module in the DB
-  # TODO get the jobtype, do nothing if it's not defined.
   try:
       OSImageJobType = JobModule.objects.get(slug='os-image-update')
-  except:
+  except JobModule.DoesNotExist:
+      logger.warning("JobModule 'os-image-update' not found")
       OSImageJobType = None
-  print(OSImageJobType)
+  
   if OSImageJobType is not None:
       # save a new job, if one doesn't already exist.
       Job.objects.update_or_create(
@@ -127,7 +130,7 @@ def OSDistroUpdateJob(sender, **kwargs):
 @receiver(post_save, sender=OSDistro)
 def OSDistroCreateRepos(sender, instance, **kwargs):
   if hasattr(instance, "_post_save"):
-    # if we are fired off from a previous post save clal, skip.
+    # if we are fired off from a previous post save call, skip.
     return
   baseURL=instance.baseurl
   # remov trailing slash
@@ -193,11 +196,11 @@ def OSDistroDeleteJob(sender, **kwargs):
   OSImageJobType = None
   try:
       OSImageJobType = JobModule.objects.get(slug='os-image-delete')
-  except:
+  except JobModule.DoesNotExist:
+      logger.warning("JobModule 'os-image-delete' not found")
       OSImageJobType = None
-  print(OSImageJobType)
+  
   # get or create the OSIMAGE_UPDATE job module in the DB
-  # TODO get the jobtype, do nothing if it's not defined.
   if OSImageJobType is not None:
       # save a new job, if one doesn't already exist.
       Job.objects.update_or_create(
@@ -215,8 +218,10 @@ def RepoUpdateJob(sender, instance, **kwargs):
   # get the jobtype, do nothing if it's not defined.
   try:
       RepoJobType = JobModule.objects.get(slug='repo-update')
-  except:
+  except JobModule.DoesNotExist:
+      logger.warning("JobModule 'repo-update' not found")
       RepoJobType = None
+  
   if RepoJobType is not None and instance.update and instance.id is not None:
       instance.version = instance.version +1 
       # save a new job, if one doesn't already exist.
@@ -239,9 +244,10 @@ def RepoDeleteJob(sender, **kwargs):
   RepoJobType = None
   try:
       RepoJobType = JobModule.objects.get(slug='repo-delete')
-  except:
+  except JobModule.DoesNotExist:
+      logger.warning("JobModule 'repo-delete' not found")
       RepoJobType = None
-  print(RepoJobType)
+      
   # get the jobtype, do nothing if it's not defined.
   if RepoJobType is not None:
       # save a new job, if one doesn't already exist.
@@ -257,7 +263,8 @@ def DeleteJobserver(sender, instance, **kwargs):
     # get the jobtype, do nothing if it's not defined.
     try:
         RepoJobType = JobModule.objects.get(slug='repo-update')
-    except:
+    except JobModule.DoesNotExist:
+        logger.warning("JobModule 'repo-update' not found")
         RepoJobType = None
     
     if RepoJobType is not None:

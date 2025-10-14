@@ -2,7 +2,7 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+import pytz
 
 
 class Migration(migrations.Migration):
@@ -15,26 +15,26 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='nadssystem',
             name='discovered',
-            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 772310, tzinfo=utc), verbose_name='Discovered'),
+            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 772310, tzinfo=pytz.UTC), verbose_name='Discovered'),
         ),
         migrations.AlterField(
             model_name='system',
             name='timestamp',
-            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 761968, tzinfo=utc), verbose_name='Created'),
+            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 761968, tzinfo=pytz.UTC), verbose_name='Created'),
         ),
         migrations.AlterField(
             model_name='system',
             name='updated',
-            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 762028, tzinfo=utc), verbose_name='Lasted Updated'),
+            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 762028, tzinfo=pytz.UTC), verbose_name='Lasted Updated'),
         ),
         migrations.AlterField(
             model_name='systemimage',
             name='timestamp',
-            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 767477, tzinfo=utc), verbose_name='Created'),
+            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 767477, tzinfo=pytz.UTC), verbose_name='Created'),
         ),
         migrations.AlterField(
             model_name='systemimage',
             name='updated',
-            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 767531, tzinfo=utc), verbose_name='Lasted Updated'),
+            field=models.DateTimeField(default=datetime.datetime(2024, 1, 23, 3, 16, 43, 767531, tzinfo=pytz.UTC), verbose_name='Lasted Updated'),
         ),
     ]

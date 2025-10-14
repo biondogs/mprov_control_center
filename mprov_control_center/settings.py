@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import ldap
-from django_auth_ldap.config import LDAPSearch, PosixGroupType
+try:
+    import ldap
+    from django_auth_ldap.config import LDAPSearch, PosixGroupType
+    LDAP_AVAILABLE = True
+except ImportError:
+    LDAP_AVAILABLE = False
 import socket
 
 
@@ -46,6 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'ckeditor',
+    'ckeditor_uploader',
     
     'networks',
     'osmanagement',
@@ -253,7 +260,7 @@ CACHES = {
 }
 
 # LDAP OPTIONS:
-if os.environ.get("LDAP_ENABLED", "0") == "1":
+if LDAP_AVAILABLE and os.environ.get("LDAP_ENABLED", "0") == "1":
 
     # Most of these should be configurable via the .enf file.  Please read carefully to see if you need to adjust anything.
     # You can also see the docs for the LDAP python module for django here: https://django-auth-ldap.readthedocs.io
@@ -316,3 +323,28 @@ if os.environ.get("LDAP_ENABLED", "0") == "1":
         "handlers": {"console": {"class": "logging.StreamHandler"}},
         "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
     }
+
+# CKEditor Configuration
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 400,
+        'width': '100%',
+    },
+    'script_editor': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source'],
+            ['Maximize'],
+        ],
+        'height': 300,
+        'width': '100%',
+    },
+}

@@ -48,6 +48,7 @@ admin.site.index_title = 'mProv Control Center'
 urlpatterns = [
     path('accounts/profile/', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', IndexAPIView.as_view()),
     path('networks/', NetworkAPIView.as_view()),
     path('networks/<str:pk>/', NetworkAPIView.as_view()),

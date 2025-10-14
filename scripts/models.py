@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django.conf import settings
+from ckeditor.fields import RichTextField
 import os
 
 
@@ -25,6 +26,7 @@ class Script(models.Model):
   endpoint="/scripts/"
   name=models.CharField(max_length=120, verbose_name=("Script Name"))
   slug=models.SlugField(unique=True, primary_key=True)
+  description=RichTextField(blank=True, null=True, config_name='script_editor', help_text="Optional description of what this script does")
   filename = models.FileField(upload_to='')
   scriptType = models.ForeignKey(ScriptType, on_delete=models.SET_NULL, null=True)
   version = models.BigIntegerField(default=1)
@@ -57,6 +59,7 @@ class File(models.Model):
   endpoint="/files/"
   name=models.CharField(max_length=120, verbose_name=("File Name"))
   slug=models.SlugField(unique=True, primary_key=True)
+  description=RichTextField(blank=True, null=True, config_name='script_editor', help_text="Optional description of this file")
   filename = models.FileField(upload_to='')
   version = models.BigIntegerField(default=1)
   
@@ -86,6 +89,7 @@ class AnsiblePlaybook(models.Model):
   endpoint="/ansibleplaybook/"
   name=models.CharField(max_length=120, verbose_name=("Playbook Name"))
   slug=models.SlugField(unique=True, primary_key=True)
+  description=RichTextField(blank=True, null=True, config_name='script_editor', help_text="Optional description of what this playbook does")
   filename = models.FileField(upload_to='')
   scriptType = models.ForeignKey(ScriptType, on_delete=models.SET_NULL, null=True, verbose_name="Playbook Type")
   version = models.BigIntegerField(default=1)
@@ -126,6 +130,7 @@ class AnsibleRole(models.Model):
   endpoint="/ansiblerole/"
   name=models.CharField(max_length=120, verbose_name="Role Name")
   slug=models.SlugField(unique=True, primary_key=True)
+  description=RichTextField(blank=True, null=True, config_name='script_editor', help_text="Optional description of what this role does")
   roleurl = models.CharField(max_length=2048, verbose_name="Role URL", help_text="This can be a URL to a specific git repository housing a role or an Ansible Galaxy Role descriptor.  See the 'ansible-galaxy' command for help." )
   scriptType = models.ForeignKey(ScriptType, on_delete=models.SET_NULL, null=True, verbose_name="Role Type")
   version = models.BigIntegerField(default=1)
@@ -154,6 +159,7 @@ class AnsibleCollection(models.Model):
   endpoint="/ansiblecollection/"
   name=models.CharField(max_length=120, verbose_name="Collection Name")
   slug=models.SlugField(unique=True, primary_key=True)
+  description=RichTextField(blank=True, null=True, config_name='script_editor', help_text="Optional description of what this collection does")
   collectionurl = models.CharField(max_length=2048, verbose_name="Collection URL", help_text="The Ansible Galaxy Collection descriptor.  See the 'ansible-galaxy' command for help." )
   scriptType = models.ForeignKey(ScriptType, on_delete=models.SET_NULL, null=True, verbose_name="Collection Type")
   version = models.BigIntegerField(default=1)

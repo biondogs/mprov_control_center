@@ -1,6 +1,6 @@
 
 # mProv Control Center
-![Buidl Status](https://img.shields.io/github/actions/workflow/status/mprov-ng/mprov_control_center/dockerimages-dev.yml?style=plastic)
+![Build Status](https://img.shields.io/github/actions/workflow/status/mprov-ng/mprov_control_center/dockerimages-dev.yml?style=plastic)
 ![Latest Version](https://img.shields.io/github/v/tag/mprov-ng/mprov_control_center?style=plastic)
 ![License](https://img.shields.io/github/license/mprov-ng/mprov_control_center?style=plastic)
 
@@ -13,7 +13,7 @@ The mPCC performs a wide range of jobs, permissions, and maintenance:
 - An endpoint for serving files to nodes that require PXE booting 
 - Running scripts to nodes post boot
 
-The mPCC is based off of Django 3.2. You will need to run a Python web app server to then run the Django code. The installation proceedure found below will walk you through most of the necessary steps, including installing Apache with `python38-mod_wsgi`. This version of mPCC requires Python-3.8 or higher, however we are still testing with versions 3.9 and higher.
+The mPCC is a Django web application; `requirements.txt` lists the Django packages it uses but does not pin their versions. You will need to run a Python web app server to then run the Django code. The installation proceedure found below will walk you through most of the necessary steps, including installing Apache with `python38-mod_wsgi`. This version of mPCC requires Python-3.8 or higher, however we are still testing with versions 3.9 and higher.
 
 ## Requirements
 - The mPCC requires python 3.8 and above.  
@@ -51,7 +51,7 @@ Docker images exist for the mPCC as well.  More information on how to use the do
 - /var/www/mprov_control_center/media : Where scripts get stored.
 
 # Post installation
-The succesfully installed MPCC admin UI is available at http://<FQDN or IP>/admin/login/?next=/admin/ . The default credntails are admin / admin. 
+The succesfully installed MPCC admin UI is available at http://<FQDN or IP>/admin/login/?next=/admin/ . The default credentials are admin / admin (set at install time as `DJANGO_SUPERUSER_USERNAME`/`DJANGO_SUPERUSER_PASSWORD` in `/var/www/mprov_control_center/.env`; change them immediately). 
 Once you have the installation installed, it is highly suggested that you create an API Key and get a job server running, https://github.com/mprov-ng/mprov_jobserver/blob/main/README.md
 
 When creating an API key in the mPCC, you only need to specify a name for the api key, the expire times are only if your security protocols dictate the need for expiring keys.
